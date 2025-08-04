@@ -16,7 +16,7 @@ def login():
     flow = Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE,
         scopes=SCOPES,
-        redirect_uri=url_for('oauth2callback', _external=True)
+        redirect_uri=url_for('https://microservicea-49yf.onrender.com', _external=True)
     )
     auth_url, state = flow.authorization_url(
         access_type='offline',
@@ -32,7 +32,7 @@ def oauth2callback():
         CLIENT_SECRETS_FILE,
         scopes=SCOPES,
         state=state,
-        redirect_uri=url_for('oauth2callback', _external=True)
+        redirect_uri=url_for('https://microservicea-49yf.onrender.com', _external=True)
     )
     flow.fetch_token(authorization_response=request.url)
     creds = flow.credentials

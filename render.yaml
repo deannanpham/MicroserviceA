@@ -1,6 +1,0 @@
-services:
-  type: web
-  name: audio-transcriber
-  env: python
-  plan: free
-  startCommand: python app.py

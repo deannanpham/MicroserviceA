@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, session, jsonify, url_for
+from flask import Flask, request, session, jsonify
 from google_auth_oauthlib.flow import Flow
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
@@ -9,33 +9,19 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'change_me')
 
 SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
-CLIENT_SECRETS_FILE = '/etc/secrets/client_secret_web.json'
+CLIENT_SECRETS_FILE = '/etc/secrets/client_secret_desktop.json'  #desktop client secrets
 
 @app.route('/login')
 def login():
     flow = Flow.from_client_secrets_file(
         CLIENT_SECRETS_FILE,
         scopes=SCOPES,
-        redirect_uri=url_for('oauth2callback', _external=True)
+        redirect_uri='http://localhost:8080/'  #local redirect URI for desktop flow
     )
-    auth_url, state = flow.authorization_url(
-        access_type='offline',
-        include_granted_scopes='true'
-    )
-    session['state'] = state
-    return redirect(auth_url)
+    #run_local_server handles the full OAuth flow:
+    creds = flow.run_local_server(port=8080, prompt='consent', authorization_prompt_message='Please authorize the app')
 
-@app.route('/oauth2callback')
-def oauth2callback():
-    state = session['state']
-    flow = Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE,
-        scopes=SCOPES,
-        state=state,
-        redirect_uri=url_for('oauth2callback', _external=True)
-    )
-    flow.fetch_token(authorization_response=request.url)
-    creds = flow.credentials
+    #save credentials to session
     session['credentials'] = {
         'token': creds.token,
         'refresh_token': creds.refresh_token,

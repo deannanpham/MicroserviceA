@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'change_me')
 
 SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
-CLIENT_SECRETS_FILE = 'client_secret_web.json'
+CLIENT_SECRETS_FILE = '/etc/secrets/client_secret_web.json'
 
 @app.route('/login')
 def login():
@@ -75,4 +75,5 @@ def transcribe():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)

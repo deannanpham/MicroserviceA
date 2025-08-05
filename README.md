@@ -40,5 +40,5 @@ for file in files:
             done = downloader.next_chunk()
 ```
 
-
+# UML Sequence Diagram:
 ![UML Sequence Diagram](images/diagram.png)
